@@ -112,24 +112,35 @@
   (let* ((result nil)
 	 (handle (or action (lambda (value) (setf result value)))))
     (setf (gethash (sc::id (node vst-controller)) *vst-parameter-action*) handle)
-    (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller) "/get" index)
+    (sc::message-distribute (node vst-controller) 
+			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller) "/get" index)
+			  sc:*s*)
     (unless action
       (sc:sync)
       result)))
 
 (defun (setf parameter) (value vst-controller index)
-  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller) "/set" index
-		   (min 1.0 (max .0 value))))
+  (sc::message-distribute (node vst-controller) 
+			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller) "/set" index
+				(min 1.0 (max .0 value) ))
+			  sc:*s*))
 
 
 (defun note-in (vst-controller chan note vel)
-  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
-		   "/midi_msg" (vector (logior #x90 chan) note vel) 0.0))
+  (sc::message-distribute (node vst-controller) 
+			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+				"/midi_msg" (vector (logior #x90 chan) note vel) 0.0)
+			  sc:*s*))
 
 (defun note-off (vst-controller chan note vel)
-  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
-		   "/midi_msg" (vector (logior #x80 chan) note vel) 0.0))
+  (sc::message-distribute (node vst-controller) 
+			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+				"/midi_msg" (vector (logior #x80 chan) note vel) 0.0)
+			  sc:*s*))
 
 (defun midi-cc (vst-controller chan control val)
-  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
-		   "/midi_msg" (vector (logior #xb0 chan) control val) 0.0))
+  (sc::message-distribute (node vst-controller) 
+			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+				"/midi_msg" (vector (logior #xb0 chan) control val) 0.0)
+			  sc:*s*))
+
