@@ -6,4 +6,5 @@
 	   #:parameter
 	   #:editor
 	   #:note-in
-	   #:note-off))
+	   #:note-off
+	   #:midi-cc))

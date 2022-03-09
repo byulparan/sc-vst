@@ -124,8 +124,12 @@
 
 (defun note-in (vst-controller chan note vel)
   (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
-		   "/midi_msg" (vector (logior #x90 chan)  note vel)   0.0))
+		   "/midi_msg" (vector (logior #x90 chan) note vel) 0.0))
 
 (defun note-off (vst-controller chan note vel)
   (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
-		   "/midi_msg" (vector (logior #x80 chan) note vel)   0.0))
+		   "/midi_msg" (vector (logior #x80 chan) note vel) 0.0))
+
+(defun midi-cc (vst-controller chan control val)
+  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+		   "/midi_msg" (vector (logior #xb0 chan) control val) 0.0))
