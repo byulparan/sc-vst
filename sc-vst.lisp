@@ -14,8 +14,8 @@
        (funcall (gethash node *vst-parameter-action*) value)))
     (sc:add-reply-responder
      "/vst_param"
-     (lambda (node synth-index index value a b c d e)
-       (declare (ignorable node synth-index index value a b c d e))))
+     (lambda (&rest rest)
+       (declare (ignore rest))))
     (sc:add-reply-responder
      "/vst_auto"
      (lambda (node synth-index index value)
