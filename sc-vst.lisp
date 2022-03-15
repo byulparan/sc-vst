@@ -126,7 +126,7 @@
 			  sc:*s*))
 
 
-(defun note-in (vst-controller chan note vel)
+(defun note-on (vst-controller chan note vel)
   (sc::message-distribute (node vst-controller) 
 			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
 				"/midi_msg" (vector (logior #x90 chan) note vel) 0.0)
