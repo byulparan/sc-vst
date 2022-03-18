@@ -20,6 +20,26 @@
      "/vst_auto"
      (lambda (node synth-index index value)
        (declare (ignorable node synth-index index value))))
+    (sc:add-reply-responder
+     "/vst_midi"
+     (lambda (&rest param)
+       (declare (ignore param))))
+    (sc:add-reply-responder
+     "/vst_update"
+     (lambda (node val)
+       (declare (ignore node val))))
+    (sc:add-reply-responder
+     "/vst_program"
+     (lambda (&rest param)
+       (declare (ignore param))))
+    (sc:add-reply-responder
+     "/vst_program_read"
+     (lambda (node synth-index success)
+       (declare (ignore synth-index success))))
+    (sc:add-reply-responder
+     "/vst_program_write"
+     (lambda (node synth-index success)
+       (declare (ignore synth-index success))))
     (setf *initialize-vst-responder* t)))
 
 (flet ((uninitalize-vst ()
@@ -123,6 +143,7 @@
       result)))
 
 (defun (setf parameter) (value vst-controller index)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
   (sc::message-distribute (node vst-controller) 
 			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller) "/set" index
 				(min 1.0 (max .0 value) ))
@@ -130,20 +151,47 @@
 
 
 (defun note-on (vst-controller chan note vel)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
+  (setf chan (alexandria:clamp (- chan 1) 0 15))
   (sc::message-distribute (node vst-controller) 
 			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
 				"/midi_msg" (vector (logior #x90 chan) note vel) 0.0)
 			  sc:*s*))
 
 (defun note-off (vst-controller chan note vel)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
+  (setf chan (alexandria:clamp (- chan 1) 0 15))
   (sc::message-distribute (node vst-controller) 
 			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
 				"/midi_msg" (vector (logior #x80 chan) note vel) 0.0)
 			  sc:*s*))
 
+
+(defun play-note (vst-controller beat chan note vel duration)
+  (sc:at-beat beat (note-on vst-controller chan note vel))
+  (sc:at-beat (+ beat (* duration .98)) (note-off vst-controller chan note 0)))
+
 (defun midi-cc (vst-controller chan control val)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
+  (setf chan (alexandria:clamp (- chan 1) 0 15))
   (sc::message-distribute (node vst-controller) 
 			  (list "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
 				"/midi_msg" (vector (logior #xb0 chan) control val) 0.0)
 			  sc:*s*))
+
+
+
+(defun write-program (vst-controller path)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
+  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+		   "/program_write" (sc::full-pathname path) 1))
+
+(defun read-program (vst-controller path)
+  (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
+  (sc:send-message sc:*s* "/u_cmd" (sc::id (node vst-controller)) (index vst-controller)
+		   "/program_read" (sc::full-pathname path) 1))
+
+
+
+
 

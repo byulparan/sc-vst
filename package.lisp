@@ -9,4 +9,7 @@
 	   #:editor
 	   #:note-on
 	   #:note-off
-	   #:midi-cc))
+	   #:play-note
+	   #:midi-cc
+	   #:write-program
+	   #:read-program))
