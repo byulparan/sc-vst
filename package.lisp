@@ -1,6 +1,7 @@
 (defpackage #:sc-vst
   (:use #:cl)
-  (:export #:vst-plugin.ar
+  (:export #:vst-search
+	   #:vst-plugin.ar
 	   #:vst-controller
 	   #:node
 	   #:parameter-list

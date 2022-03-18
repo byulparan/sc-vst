@@ -27,6 +27,9 @@
   (push #'uninitalize-vst sc:*server-quit-hooks*))
 
 
+(defun vst-search ()
+  (sc:send-message sc:*s* "/cmd" "/vst_search" 7 -1 0 0))
+
 (defclass vst-plugin (sc::multiout-ugen)
   ((id :initarg :id :accessor id)))
 
