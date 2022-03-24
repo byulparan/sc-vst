@@ -169,7 +169,7 @@
 
 (defun play-note (vst-controller beat chan note vel duration)
   (sc:at-beat beat (note-on vst-controller chan note vel))
-  (sc:at-beat (+ beat (* duration .98)) (note-off vst-controller chan note 0)))
+  (sc:at-beat (+ beat (* duration .9)) (note-off vst-controller chan note 0)))
 
 (defun midi-cc (vst-controller chan control val)
   (assert (sc:is-playing-p (node vst-controller)) nil "Not running ~a" (node vst-controller))
