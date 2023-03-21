@@ -56,9 +56,11 @@
 (defmethod sc::optimize-graph ((ugen vst-plugin))
   (setf (getf (sc::synthdef-metadata (sc::name sc::*synthdef*) :vst) (id ugen)) (sc::synth-index ugen)))
 
-(defun vst-plugin.ar (in num-output id)
+(defun vst-plugin.ar (in num-output id &key params)
+  (assert (evenp (length params)) nil "params should be list of key/value pair")
   (let* ((in (alexandria:ensure-list in))
-	 (inputs (append (list 0 0 0 (if in 1 0)) (if in (cons (length in) in)) (list 1 num-output) (list 0))))
+	 (inputs (append (list 0 0 0 (if in 1 0)) (if in (cons (length in) in)) (list 1 num-output) (list (/ (length params) 2))
+			 params)))
     (apply #'sc::new1 (make-instance 'vst-plugin
 			:name "VSTPlugin"
 			:id id
