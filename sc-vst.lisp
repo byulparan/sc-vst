@@ -195,5 +195,12 @@
 
 
 
+(defmethod sc::free ((object vst-controller))
+  (sc:free (node object)))
+
+(defmethod sc::floatfy ((object vst-controller))
+  (node object))
+
+
 
 
