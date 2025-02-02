@@ -4,8 +4,11 @@
 	   #:vst-plugin.ar
 	   #:vst-controller
 	   #:node
+	   #:*debug-paramger-changed*
 	   #:parameter-list
 	   #:parameter
+	   #:parameter-map
+	   #:parameter-unmap
 	   #:editor
 	   #:note-on
 	   #:note-off
