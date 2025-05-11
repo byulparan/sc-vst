@@ -37,7 +37,7 @@ it's binding for [vstplugin](https://github.com/Spacechild1/vstplugin).
 (defparameter *piano* (sc-vst:vst-controller (synth 'piano) :piano "Pianoteq 7"))
 (sc-vst:editor *piano*)
 
-(sc-vst::note-in *piano* 1 50 100)
+(sc-vst::note-on *piano* 1 50 100)
 (sc-vst::note-off *piano* 1 50 100)
 ```
 
